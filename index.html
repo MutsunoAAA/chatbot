@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お姉さんチャットボット</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>お姉さんチャットボット</h1>
+            <p>何でも相談してくださいね♪</p>
+        </header>
+        
+        <div class="chat-container">
+            <div class="character-section">
+                <div class="character-container">
+                    <div class="character-image" id="characterImage">
+                        <div class="placeholder-character">
+                            <div class="face">
+                                <div class="eyes">
+                                    <div class="eye left-eye"></div>
+                                    <div class="eye right-eye"></div>
+                                </div>
+                                <div class="mouth"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="character-name">お姉さん</div>
+                </div>
+            </div>
+            
+            <div class="chat-section">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot-message">
+                        <div class="message-content">
+                            こんにちは！私はあなたの相談相手になるお姉さんです。何でも気軽に話しかけてくださいね。悩みがあったら一緒に考えましょう♪
+                        </div>
+                        <div class="message-time"></div>
+                    </div>
+                </div>
+                
+                <div class="input-container">
+                    <input type="text" id="messageInput" placeholder="メッセージを入力してください..." maxlength="500">
+                    <button id="sendButton">送信</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="loading-indicator" id="loadingIndicator">
+            <div class="spinner"></div>
+            <span>お姉さんが考えています...</span>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
