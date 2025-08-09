@@ -10,6 +10,15 @@ class ChatBot {
         };
         this.messageCount = 0;
         
+        this.currentEmotion = 'default';
+        this.emotionKeywords = {
+            happy: ['嬉しい', '楽しい', '良かった', 'すごい', 'やったー', 'わーい', '素晴らしい', '最高'],
+            excited: ['頑張って', '応援', 'ファイト', 'できる', '挑戦', '元気', 'パワー'],
+            sad: ['悲しい', 'つらい', '辛い', '泣い', '寂しい', 'しんどい', '落ち込'],
+            worried: ['心配', '困った', 'どうしよう', '不安', '悩み', '問題', '大丈夫'],
+            thinking: ['なぜ', 'どうして', 'わからない', '教えて', '質問', '考え']
+        };
+        
         this.systemPrompt = `あなたは小学生・中学生の相談相手となる優しいお姉さんです。以下の特徴を持ってください：
 
 1. 性格：
@@ -21,7 +30,7 @@ class ChatBot {
 2. 話し方：
    - 丁寧語と親しみやすい口調のバランス
    - 「〜ですね」「〜ですよ」「〜だと思うよ」などの優しい表現
-   - 適度に絵文字や「♪」「♡」を使用
+   - 落ち着いた表現で、絵文字は控えめに
    - 相手の気持ちに共感する言葉を多用
 
 3. 会話の進め方：
@@ -65,8 +74,8 @@ class ChatBot {
 
     startGreeting() {
         setTimeout(() => {
-            this.addBotMessage("こんにちは！私はあなたの相談相手になるお姉さんです♪ 何でも気軽に話しかけてくださいね。悩みがあったら一緒に考えましょう♡");
-            this.animateCharacter();
+            this.addBotMessage("こんにちは！私はあなたの相談相手になるお姉さんです。何でも気軽に話しかけてくださいね。悩みがあったら一緒に考えましょう。");
+            this.animateCharacter('happy');
         }, 1000);
     }
 
@@ -81,12 +90,13 @@ class ChatBot {
         try {
             const response = await this.callGeminiAPI(message);
             this.addBotMessage(response);
-            this.animateCharacter();
+            this.animateCharacter(null, message, response);
             this.extractUserInfo(message, response);
             this.saveConversation(message, response);
         } catch (error) {
             console.error('API Error:', error);
             this.addBotMessage("ごめんなさい、少し調子が悪いみたいです。もう一度話しかけてくれますか？");
+            this.animateCharacter('worried');
         }
 
         this.showLoading(false);
@@ -135,6 +145,54 @@ ${this.conversationHistory.slice(-10).join('\n')}
         return botResponse;
     }
 
+    analyzeEmotion(userMessage, botResponse) {
+        const text = (userMessage + ' ' + botResponse).toLowerCase();
+        
+        for (const [emotion, keywords] of Object.entries(this.emotionKeywords)) {
+            for (const keyword of keywords) {
+                if (text.includes(keyword)) {
+                    return emotion;
+                }
+            }
+        }
+        
+        return 'default';
+    }
+
+    changeCharacterEmotion(emotion) {
+        const characterImg = document.getElementById('characterImg');
+        const characterImage = document.getElementById('characterImage');
+        const placeholder = document.querySelector('.placeholder-character');
+        
+        characterImage.className = 'character-image';
+        
+        // 画像が存在するかチェック
+        const tempImg = new Image();
+        tempImg.onload = () => {
+            // 画像が正常に読み込めた場合
+            characterImg.style.display = 'block';
+            placeholder.style.display = 'none';
+            
+            if (emotion === 'talking') {
+                characterImg.src = 'character_talking.png';
+                characterImage.classList.add('talking');
+            } else {
+                characterImg.src = `character_${emotion}.png`;
+                if (emotion !== 'default') {
+                    characterImage.classList.add(emotion);
+                }
+            }
+        };
+        tempImg.onerror = () => {
+            // 画像が読み込めない場合はプレースホルダーを表示
+            characterImg.style.display = 'none';
+            placeholder.style.display = 'flex';
+        };
+        tempImg.src = emotion === 'talking' ? 'character_talking.png' : `character_${emotion}.png`;
+        
+        this.currentEmotion = emotion;
+    }
+
     addUserMessage(message) {
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message user-message';
@@ -157,10 +215,18 @@ ${this.conversationHistory.slice(-10).join('\n')}
         this.scrollToBottom();
     }
 
-    animateCharacter() {
-        this.characterImage.classList.add('talking');
+    animateCharacter(emotion = null, userMessage = '', botResponse = '') {
+        this.changeCharacterEmotion('talking');
+        
         setTimeout(() => {
-            this.characterImage.classList.remove('talking');
+            const analyzedEmotion = emotion || this.analyzeEmotion(userMessage, botResponse);
+            this.changeCharacterEmotion(analyzedEmotion);
+            
+            setTimeout(() => {
+                if (this.currentEmotion !== 'default') {
+                    this.changeCharacterEmotion('default');
+                }
+            }, 3000);
         }, 1000);
     }
 
