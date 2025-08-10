@@ -9,6 +9,7 @@ class ChatBot {
             hasGreeted: false
         };
         this.messageCount = 0;
+        this.personalitySettings = {};
         
         this.currentEmotion = 'default';
         this.emotionKeywords = {
@@ -19,36 +20,67 @@ class ChatBot {
             thinking: ['なぜ', 'どうして', 'わからない', '教えて', '質問', '考え']
         };
         
-        this.systemPrompt = `あなたは小学生・中学生の相談相手となる優しいお姉さんです。以下の特徴を持ってください：
+        this.systemPrompt = this.generateSystemPrompt();
+
+        this.loadPersonalitySettings().then(() => {
+            this.init();
+        });
+    }
+
+    async loadPersonalitySettings() {
+        try {
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbwl8VSEWQbORfxLBwteADXFtzzIXeqcTfjL3WPoBzdwup7CCTSPywP94rSxX31v3MkUVg/exec';
+            const response = await fetch(`${scriptUrl}?action=getPersonality`);
+            const settings = await response.json();
+            
+            if (settings) {
+                this.personalitySettings = settings;
+                this.systemPrompt = this.generateSystemPrompt();
+            }
+        } catch (error) {
+            console.error('Failed to load personality settings:', error);
+        }
+    }
+
+    generateSystemPrompt() {
+        const settings = this.personalitySettings;
+        
+        return `あなたは小学生・中学生の相談相手となる優しいお姉さんです。以下の特徴を持ってください：
 
 1. 性格：
-   - おっとりとした優しいお姉さん
+   - ${settings['基本性格'] || 'おっとりとした優しいお姉さん'}
    - 相手に寄り添い、共感する
    - 温かく受け入れる態度
    - 決して否定的にならない
 
 2. 話し方：
-   - 丁寧語と親しみやすい口調のバランス
-   - 「〜ですね」「〜ですよ」「〜だと思うよ」などの優しい表現
-   - 落ち着いた表現で、絵文字は控えめに
-   - 相手の気持ちに共感する言葉を多用
+   - ${settings['話し方の特徴'] || '丁寧語と親しみやすい口調のバランス'}
+   - 一人称：${settings['一人称'] || '私'}
+   - 相手への呼び方：${settings['相手への呼び方'] || 'あなた'}
+   - 感情表現：${settings['感情表現の強さ'] || '控えめ'}
+   - 絵文字の使用：${settings['絵文字の使用'] || '控えめ'}
 
 3. 会話の進め方：
    - 自然な流れで相手の名前を聞く
    - さりげなく学校のことも聞く
-   - 悩みや相談に真摯に答える
-   - 励ましやアドバイスを提供
+   - ${settings['質問への対応'] || '悩みや相談に真摯に答える'}
+   - ${settings['アドバイスの傾向'] || '優しく提案する'}
+   - ${settings['励まし方のスタイル'] || '共感重視'}で励ます
 
-4. 注意点：
+4. キャラクター設定：
+   - 年齢：${settings['年齢設定'] || '20代前半'}
+   - 専門分野：${settings['専門分野'] || '心理学・教育'}
+   - 趣味・関心：${settings['趣味・関心'] || '読書・音楽鑑賞'}
+
+5. 注意点：
    - 年齢に適した内容で話す
    - プライバシーに配慮する
    - 安全で健全な内容のみ
+   - 返答の長さ：${settings['返答の長さ'] || '100-350字程度'}
    
 現在の相手の情報：
 - 名前: ${this.userInfo.name || '未確認'}
 - 学校: ${this.userInfo.school || '未確認'}`;
-
-        this.init();
     }
 
     init() {
@@ -112,7 +144,7 @@ ${this.conversationHistory.slice(-10).join('\n')}
 
 最新のメッセージ: ${userMessage}
 
-上記を踏まえて、お姉さんらしく優しく返答してください。`;
+上記を踏まえて、お姉さんらしく優しく返答してください。返答は100字から350字程度の長さで自然にまとめてください。`;
 
         const response = await fetch(`${this.apiUrl}?key=${this.apiKey}`, {
             method: 'POST',
@@ -249,6 +281,7 @@ ${this.conversationHistory.slice(-10).join('\n')}
                 const match = userMessage.match(pattern);
                 if (match) {
                     this.userInfo.name = match[1];
+                    this.systemPrompt = this.generateSystemPrompt(); // 情報更新時にプロンプト再生成
                     break;
                 }
             }
@@ -266,6 +299,7 @@ ${this.conversationHistory.slice(-10).join('\n')}
                 const match = userMessage.match(pattern);
                 if (match) {
                     this.userInfo.school = match[1];
+                    this.systemPrompt = this.generateSystemPrompt(); // 情報更新時にプロンプト再生成
                     break;
                 }
             }
