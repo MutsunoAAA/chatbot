@@ -12,10 +12,10 @@ class ChatBot {
         
         this.currentEmotion = 'default';
         this.emotionKeywords = {
-            happy: ['嬉しい', '楽しい', '良かった', 'すごい', 'やったー', 'わーい', '素晴らしい', '最高'],
+            sad: ['悲しい', 'つらい', '辛い', '泣い', '寂しい', 'しんどい', '落ち込', '哀しい', '涙', 'むなしい'],
+            worried: ['心配', '困った', 'どうしよう', '不安', '悩み', '問題', 'まずい', 'やばい', '迷惑'],
+            happy: ['嬉しい', '楽しい', 'やったー', 'わーい', '最高', 'ありがとう', '感謝'],
             excited: ['頑張って', '応援', 'ファイト', 'できる', '挑戦', '元気', 'パワー'],
-            sad: ['悲しい', 'つらい', '辛い', '泣い', '寂しい', 'しんどい', '落ち込'],
-            worried: ['心配', '困った', 'どうしよう', '不安', '悩み', '問題', '大丈夫'],
             thinking: ['なぜ', 'どうして', 'わからない', '教えて', '質問', '考え']
         };
         
@@ -146,11 +146,16 @@ ${this.conversationHistory.slice(-10).join('\n')}
     }
 
     analyzeEmotion(userMessage, botResponse) {
-        const text = (userMessage + ' ' + botResponse).toLowerCase();
+        // ユーザーメッセージのみを分析（bot応答は除外）
+        const userText = userMessage.toLowerCase();
         
-        for (const [emotion, keywords] of Object.entries(this.emotionKeywords)) {
+        // ネガティブな感情を優先的に判定
+        const priorityOrder = ['sad', 'worried', 'happy', 'excited', 'thinking'];
+        
+        for (const emotion of priorityOrder) {
+            const keywords = this.emotionKeywords[emotion];
             for (const keyword of keywords) {
-                if (text.includes(keyword)) {
+                if (userText.includes(keyword)) {
                     return emotion;
                 }
             }
