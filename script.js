@@ -140,11 +140,16 @@ class ChatBot {
         const fullPrompt = `${this.systemPrompt}
 
 過去の会話:
-${this.conversationHistory.slice(-10).join('\n')}
+${this.conversationHistory.slice(-20).join('\n')}
 
 最新のメッセージ: ${userMessage}
 
-上記を踏まえて、お姉さんらしく優しく返答してください。返答は100字から350字程度の長さで自然にまとめてください。`;
+上記を踏まえて、過去の会話内容を踏まえて自然な流れで返答してください。
+- 前の話題や相手が言った内容に触れながら会話を続ける
+- 相手の感情や状況を覚えていることを示す
+- 「さっき～って言ってたけど」「前にお話しした～」のような繋がりを意識する
+- お姉さんらしく優しく返答する
+- 返答は100字から350字程度の長さで自然にまとめる`;
 
         const response = await fetch(`${this.apiUrl}?key=${this.apiKey}`, {
             method: 'POST',
