@@ -201,6 +201,8 @@ header p {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
 }
 
 .message {
@@ -331,43 +333,56 @@ header p {
         font-size: 2rem;
     }
     
+    header p {
+        font-size: 1rem;
+    }
+    
     .chat-container {
         flex-direction: column;
-        min-height: 500px;
+        min-height: calc(100vh - 200px);
+        gap: 0;
     }
     
     .character-section {
         flex: none;
         padding: 15px;
-        min-height: 280px;
-        padding-top: 5px;
+        min-height: 200px;
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
     
     .character-image {
-        width: 200px;
-        height: 280px;
+        width: 150px;
+        height: 200px;
+    }
+    
+    .character-name {
+        font-size: 1.1rem;
     }
     
     .chat-section {
-        height: 400px;
+        height: calc(100vh - 350px);
+        min-height: 300px;
     }
     
     .chat-messages {
-        padding: 20px;
+        padding: 15px;
+        gap: 12px;
     }
     
     .input-container {
-        padding: 20px;
-        flex-direction: column;
+        padding: 15px;
         gap: 10px;
     }
     
     #messageInput {
-        width: 100%;
+        padding: 12px 16px;
+        font-size: 16px;
     }
     
     #sendButton {
-        width: 100%;
+        padding: 12px 24px;
+        font-size: 0.9rem;
     }
 }
 
@@ -397,21 +412,153 @@ header p {
 }
 
 @media screen and (max-width: 480px) {
+    .container {
+        padding: 5px;
+    }
+    
+    header {
+        margin-bottom: 15px;
+    }
+    
     header h1 {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
+    }
+    
+    header p {
+        font-size: 0.9rem;
+        padding: 0 10px;
+    }
+    
+    .chat-container {
+        min-height: calc(100vh - 150px);
+    }
+    
+    .character-section {
+        min-height: 150px;
+        padding: 10px;
     }
     
     .character-image {
-        width: 180px;
-        height: 240px;
+        width: 120px;
+        height: 160px;
+    }
+    
+    .character-name {
+        font-size: 1rem;
+    }
+    
+    .chat-section {
+        height: calc(100vh - 280px);
+        min-height: 250px;
+    }
+    
+    .chat-messages {
+        padding: 10px;
+        gap: 10px;
     }
     
     .message {
-        max-width: 90%;
+        max-width: 85%;
     }
     
     .message-content {
-        padding: 12px 16px;
+        padding: 10px 14px;
         font-size: 0.9rem;
+        border-radius: 15px;
+    }
+    
+    .input-container {
+        padding: 10px;
+        gap: 8px;
+    }
+    
+    #messageInput {
+        padding: 10px 14px;
+        font-size: 16px;
+        border-radius: 20px;
+    }
+    
+    #sendButton {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        border-radius: 20px;
+    }
+    
+    .disclaimer {
+        margin-top: 15px;
+        padding: 15px;
+    }
+    
+    .disclaimer-content p {
+        font-size: 0.8rem;
+    }
+}
+
+@media screen and (max-width: 375px) {
+    .container {
+        padding: 3px;
+    }
+    
+    header h1 {
+        font-size: 1.6rem;
+    }
+    
+    .character-section {
+        min-height: 130px;
+        padding: 8px;
+    }
+    
+    .character-image {
+        width: 100px;
+        height: 140px;
+    }
+    
+    .chat-section {
+        height: calc(100vh - 250px);
+        min-height: 200px;
+    }
+    
+    .chat-messages {
+        padding: 8px;
+    }
+    
+    .message-content {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .input-container {
+        padding: 8px;
+        gap: 6px;
+    }
+    
+    #messageInput {
+        padding: 8px 12px;
+        font-size: 16px;
+    }
+    
+    #sendButton {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        min-height: 44px;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    header h1 {
+        font-size: 1.4rem;
+    }
+    
+    .character-image {
+        width: 90px;
+        height: 120px;
+    }
+    
+    .message-content {
+        font-size: 0.8rem;
+    }
+    
+    .input-container {
+        padding: 6px;
     }
 }
